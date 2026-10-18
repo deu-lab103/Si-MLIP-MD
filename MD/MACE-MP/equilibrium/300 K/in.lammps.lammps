@@ -1,0 +1,45 @@
+#-------------------structure----------------
+
+units           metal
+atom_style      atomic
+atom_modify map yes
+newton          on
+dimension       3
+boundary        p p p
+
+#------------------- read data ---------------------
+
+read_data       Si.data
+
+#------------- potential ----------------
+
+pair_style      mliap unified MACE_FT.model-mliap_lammps.pt 0
+pair_coeff      * * Si
+
+mass            1 28.0855
+
+#-------------simulation----------
+
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+timestep        0.0005
+
+velocity        all create 300.0 12345 mom yes rot no dist gaussian
+
+thermo          500
+thermo_style    custom step temp pe ke etotal press vol
+
+dump            dpos all custom 5000 dump_*.trj id type x y z vx vy vz fx fy fz
+dump_modify     dpos sort id
+
+fix              int     all    npt     temp  300.0 300.0 0.1 x 0.0 0.0 1.0 y 0.0 0.0 1.0 z 0.0 0.0 1.0
+
+run             40000
+
+unfix           int
+
+# ----------------------output---------------------------
+
+write_data      final_300K.data
+write_restart	Si.restart

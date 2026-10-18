@@ -1,0 +1,60 @@
+#----- structure ----
+
+units           metal
+atom_style      atomic
+atom_modify     map yes
+newton          on
+dimension       3
+boundary        p p p
+
+#---- read restart ----
+
+read_restart    Si.restart
+
+#---- potential ----
+
+pair_style      mliap unified MACE.model-mliap_lammps.pt 0
+pair_coeff      * * Si
+
+mass            1 28.0855
+
+#---- simulation ----
+
+variable        tmpx equal "lx"
+variable        tmpy equal "ly"
+variable        L0x equal ${tmpx}
+variable        L0y equal ${tmpy}
+
+print           "Initial Length, Lx: ${L0x}, Ly: ${L0y}"
+
+reset_timestep  0
+timestep        0.0005
+
+fix             1 all npt temp 1000 1000 0.05 y 0 0 0.5 z 0 0 0.5
+
+variable        srate1 equal 0.0005
+
+fix             2 all deform 1 x erate ${srate1} units box remap x
+
+#---- strain and stress output ----
+
+variable	timestep equal step
+variable        strain equal "(lx - v_L0x)/v_L0x"
+variable        stress_x equal "-pxx/10000"
+variable        stress_y equal "-pyy/10000"
+variable        stress_z equal "-pzz/10000"
+
+fix             def1 all print 500 "${timestep} ${strain} ${stress_x} ${stress_y} ${stress_z}" file Si_press.txt screen no
+
+thermo          10000
+thermo_style    custom step lx ly lz press pxx pyy pzz pe ke temp
+
+dump 1 all custom 10000 dump.tensile.*.lammpstrj id type x y z vx vy vz fx fy fz
+dump_modify     1 sort id
+
+run             1000000
+
+write_restart   Si-tension.restart
+write_data      Si-tension.data
+
+print           "All done"
