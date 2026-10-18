@@ -1,0 +1,34 @@
+python3 <mace_repo_dir>/mace/cli/run_train.py \
+--name="MACE" \
+--foundation_model="medium-0b3" \
+--model_dir=results \
+--log_dir=results \
+--checkpoints_dir=results \
+--results_dir=results \
+--train_file="train.xyz" \
+--valid_file="test.xyz" \
+--energy_key="Energy" \
+--forces_key="forces" \
+--stress_key="Virial" \
+--E0s="average" \
+--energy_weight=1.0 \
+--forces_weight=10.0 \
+--stress_weight=1.0 \
+--lr=0.0005 \
+--scaling="rms_forces_scaling" \
+--batch_size=4 \
+--max_num_epochs=150 \
+--ema \
+--ema_decay=0.99 \
+--weight_decay=1e-6 \
+--clip_grad=10 \
+--amsgrad \
+--default_dtype="float64" \
+--device=cuda \
+--seed=42 \
+--num_samples_pt=500 \
+--stage_two_energy_weight=100.0 \
+--stage_two_forces_weight=10.0 \
+--stage_two_stress_weight=1.0 \
+--stage_two \
+--stage_two_lr=5e-4

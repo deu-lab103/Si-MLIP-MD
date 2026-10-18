@@ -1,0 +1,19 @@
+type        1 Si
+
+version     4
+cutoff      5 5
+n_max       4 4
+basis_size  12 12
+l_max       4 2 0
+neuron      30
+
+lambda_1    0
+lambda_e    1
+lambda_f    1
+lambda_v    0.1
+
+batch       1000
+population  50
+generation  100000
+
+save_potential 1000 0 1
